@@ -1,57 +1,45 @@
-// Contact form submission handler
-const form = document.getElementById('contact-form');
+const express = require('express');
+const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
+const app = express();
+const port = 3000;
 
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const subject = document.getElementById('subject').value;
-  const message = document.getElementById('message').value;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-  // Basic form validation
-  if (!name || !email || !subject || !message) {
-    Swal.fire('Error!', 'Please fill in all the fields!', 'error');
-    return;
-  }
+app.post('/submit-form', (req, res) => {
+ const { name, email, message } = req.body;
+ const webhookUrl = 'https://discord.com/api/webhooks/1191759206630563870/38hFGPLt3grzANC5xiMba30OzC34Lt8xvDUoUBmE5lQ6OS1tvuEGE2JvqWdGHzPFDwmj';
 
-  // More robust email validation
-  if (!validateEmail(email)) {
-    Swal.fire('Error!', 'Invalid email address!', 'error');
-    return;
-  }
+ if (!name ||!email ||!message) {
+     return res.status(400).send('Please fill in all fields');
+ }
 
-  // Use a more secure approach to send emails
-  const emailConfig = {
-    // Replace with your email service provider's API or a secure token
-    SecureToken: "C973D7AD-F097-4B95-91F4-40ABC5567812",
-    Username: 'prachansubedi4@gmail.com',
-    Password: 'D87413A3BA315888BC4CEEC85B05461AE0AC',
-    To: 'prachansubedi4@gmail.com',
-    From: email,
-    Subject: subject,
-    Body: message,
-  };
+ const payload = {
+     content: `**New Contact Form Submission**\n\n**Name:** ${name}\n**Email:** ${email}\n**Message:** ${message}`
+ };
 
-  sendEmail(emailConfig)
-    .then(() => {
-      console.log('Email sent successfully!');
-      Swal.fire('Success!', 'Your message has been sent!', 'success');
-    })
-    .catch((error) => {
-      console.error('Error sending email:', error);
-      Swal.fire('Error!', 'Failed to send your message!', 'error');
-    });
+ fetch(webhookUrl, {
+     method: 'POST',
+     headers: {
+         'Content-Type': 'application/json'
+     },
+     body: JSON.stringify(payload)
+ })
+.then(response => {
+     if (response.ok) {
+         res.status(200).send('Message sent successfully!');
+     } else {
+         res.status(500).send('Failed to send message.');
+     }
+ })
+.catch(error => {
+     console.error('Error:', error);
+     res.status(500).send(`Error sending message: ${error.message}`);
+ });
 });
 
-// More robust email validation function
-function validateEmail(email) {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return emailRegex.test(email);
-}
-
-// Send email function
-function sendEmail(emailConfig) {
-  // Replace with your email service provider's API or a custom implementation
-  return Email.send(emailConfig);
-}
+app.listen(port, () => {
+ console.log(`Server running at http://localhost:${port}`);
+});
