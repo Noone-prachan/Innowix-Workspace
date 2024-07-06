@@ -544,7 +544,7 @@ section {
 --------------------------------*/
 #portfolio {
   background: #fff;
-  padding: 80px 0;
+  padding: 50px 0; /* Adjusted padding */
 }
 
 #portfolio #portfolio-flters {
@@ -577,6 +577,11 @@ section {
 
 #portfolio .portfolio-item {
   margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #portfolio .portfolio-item .portfolio-info {
@@ -593,7 +598,6 @@ section {
 
 #portfolio .portfolio-item .portfolio-info h4 {
   font-size: 18px;
-  color: #fff;
   font-weight: 600;
   color: #333333;
   margin-bottom: 5px;
@@ -626,6 +630,20 @@ section {
 #portfolio .portfolio-item:hover .portfolio-info {
   opacity: 1;
 }
+
+.portfolio-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+}
+
+.portfolio-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 
 /*--------------------------------------------------------------
 # Portfolio Details
